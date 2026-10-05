@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
-
 plugins {
     alias(libs.plugins.android.application)
 }
@@ -52,6 +50,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.runtime)
+    implementation(libs.navigation.compose)
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
