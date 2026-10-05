@@ -9,7 +9,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.memowave.timer.ui.MainScreen
+import androidx.navigation.compose.rememberNavController
 
 class MainActivity : ComponentActivity() {
 
@@ -23,15 +23,18 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun TimerApp() {
+    val navController = rememberNavController()
+
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
-        Surface() {
-            MainScreen(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            )
+        Surface(
+            modifier = Modifier.fillMaxSize()
+            .padding(
+                top = paddingValues.calculateTopPadding(),
+                bottom = paddingValues.calculateBottomPadding()
+            )) {
+            NavGraph(navController)
         }
     }
 }
