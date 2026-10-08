@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.memowave.timer.ui.MainScreen
+import com.memowave.timer.ui.MainScreenRoute
 
 sealed class Screen(val route: String) {
     object MainScreen : Screen("main")
@@ -15,7 +15,7 @@ fun NavGraph(navController: NavHostController) {
 
     NavHost(navController = navController, startDestination = Screen.MainScreen.route) {
         composable(Screen.MainScreen.route) {
-            MainScreen()
+            MainScreenRoute(navController = navController)
         }
     }
 }
