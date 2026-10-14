@@ -9,7 +9,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import com.memowave.timer.ui.TimerViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -24,6 +26,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun TimerApp() {
     val navController = rememberNavController()
+    val timerVM = viewModel<TimerViewModel>()
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -34,7 +37,7 @@ fun TimerApp() {
                 top = paddingValues.calculateTopPadding(),
                 bottom = paddingValues.calculateBottomPadding()
             )) {
-            NavGraph(navController)
+            NavGraph(navController, timerVM)
         }
     }
 }
