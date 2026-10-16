@@ -17,7 +17,8 @@ fun NumberPicker(
     modifier: Modifier = Modifier,
     value: Long = 0,
     addValue: () -> Unit,
-    subtractValue: () -> Unit
+    subtractValue: () -> Unit,
+    isActive: Boolean = true
 ) {
     Row(
         modifier = modifier,
@@ -30,10 +31,12 @@ fun NumberPicker(
         )
         Column() {
             Button(
-                onClick = addValue
+                onClick = addValue,
+                enabled = isActive
             ) { Text(text = "+") }
             Button(
-                onClick = subtractValue
+                onClick = subtractValue,
+                enabled = isActive
             ) { Text(text = "-") }
         }
     }

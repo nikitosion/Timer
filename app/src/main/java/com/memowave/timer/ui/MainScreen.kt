@@ -67,7 +67,8 @@ fun MainScreenContent(
                         TimeUnitOperation.DECREMENT,
                         ChangedTimeUnit.HOURS
                     )
-                }
+                },
+                isActive = phase == TimerPhase.STOPPED
             )
             NumberPicker(
                 value = minutes,
@@ -77,7 +78,8 @@ fun MainScreenContent(
                         TimeUnitOperation.DECREMENT,
                         ChangedTimeUnit.MINUTES
                     )
-                }
+                },
+                isActive = phase == TimerPhase.STOPPED
             )
             NumberPicker(
                 value = seconds,
@@ -87,7 +89,8 @@ fun MainScreenContent(
                         TimeUnitOperation.DECREMENT,
                         ChangedTimeUnit.SECONDS
                     )
-                }
+                },
+                isActive = phase == TimerPhase.STOPPED
             )
         }
 
