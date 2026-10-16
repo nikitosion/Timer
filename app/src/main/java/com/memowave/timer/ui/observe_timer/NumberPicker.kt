@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun NumberPicker(
     modifier: Modifier = Modifier,
-    value: Int = 0,
+    value: Long = 0,
     addValue: () -> Unit,
     subtractValue: () -> Unit
 ) {
