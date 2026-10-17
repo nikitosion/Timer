@@ -194,18 +194,23 @@ class TimerViewModel(context: Context) : ViewModel() {
         }
     }
 
-    fun updateTime(newValue: TimeUnitOperation, changedTime: ChangedTimeUnit) {
-        when (changedTime) {
-            ChangedTimeUnit.HOURS -> _uiState.update {
-                it.copy(remainingMillis = it.remainingMillis + if (newValue == TimeUnitOperation.INCREMENT) TimeUnitInMillis.HOUR.millis else -TimeUnitInMillis.HOUR.millis)
-            }
+    fun updateTime(unitOperation: TimeUnitOperation, changedTime: ChangedTimeUnit) {
+        var delta = when (changedTime) {
+            ChangedTimeUnit.HOURS -> TimeUnitInMillis.HOUR.millis
+            ChangedTimeUnit.MINUTES -> TimeUnitInMillis.MINUTE.millis
+            ChangedTimeUnit.SECONDS -> TimeUnitInMillis.SECOND.millis
+        }
 
-            ChangedTimeUnit.MINUTES -> _uiState.update {
-                it.copy(remainingMillis = it.remainingMillis + if (newValue == TimeUnitOperation.INCREMENT) TimeUnitInMillis.MINUTE.millis else -TimeUnitInMillis.MINUTE.millis)
-            }
+        delta = when (unitOperation) {
+            TimeUnitOperation.INCREMENT -> delta
+            TimeUnitOperation.DECREMENT -> -delta
+        }
 
-            ChangedTimeUnit.SECONDS -> _uiState.update {
-                it.copy(remainingMillis = it.remainingMillis + if (newValue == TimeUnitOperation.INCREMENT) TimeUnitInMillis.SECOND.millis else -TimeUnitInMillis.SECOND.millis)
+        _uiState.update {
+            if (it.phase != TimerPhase.STOPPED) {
+                it
+            } else {
+                it.copy(remainingMillis = (it.remainingMillis + delta).coerceAtLeast(0L))
             }
         }
     }
