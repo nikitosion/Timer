@@ -135,11 +135,6 @@ class TimerViewModel(context: Context) : ViewModel() {
                 }
             )
         }
-
-        if (remainingMillis == 0L) {
-            stopTimer()
-            clearSavedTimer()
-        }
     }
 
     fun restoreTimer() {
