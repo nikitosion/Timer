@@ -71,15 +71,20 @@ fun MainScreenContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        var notificationGranted = remember { mutableStateOf(false) }
+        val notificationGranted = remember {
+            mutableStateOf(
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                        ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.POST_NOTIFICATIONS
+                        ) == PackageManager.PERMISSION_GRANTED
+            )
+        }
+
         val notificationPermissionLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission()
         ) { granted ->
-            if (!granted) {
-                notificationGranted.value = false
-            } else {
-                notificationGranted.value = true
-            }
+            notificationGranted.value = granted
         }
 
         if (!notificationGranted.value) {
@@ -165,22 +170,16 @@ fun MainScreenContent(
         }
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            var granted = ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-
-            if (!granted) {
-                OutlinedButton(
-                    onClick = {
-                        notificationPermissionLauncher.launch(
-                            Manifest.permission.POST_NOTIFICATIONS
-                        )
-                    }
-                ) {
-                    Text("Разрешить уведомления")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+            && !notificationGranted.value) {
+            OutlinedButton(
+                onClick = {
+                    notificationPermissionLauncher.launch(
+                        Manifest.permission.POST_NOTIFICATIONS
+                    )
                 }
+            ) {
+                Text("Разрешить уведомления")
             }
         }
     }
