@@ -1,5 +1,10 @@
 package com.memowave.timer.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,10 +15,16 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.memowave.timer.ui.observe_timer.NumberPicker
 
@@ -53,11 +64,33 @@ fun MainScreenContent(
     onChangedTime: (TimeUnitOperation, ChangedTimeUnit) -> Unit,
     updatePhase: (TimerPhase) -> Unit
 ) {
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        var notificationGranted = remember { mutableStateOf(false) }
+        val notificationPermissionLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission()
+        ) { granted ->
+            if (!granted) {
+                notificationGranted.value = false
+            } else {
+                notificationGranted.value = true
+            }
+        }
+
+        if (!notificationGranted.value) {
+            Text(
+                text = "Notification permission is required for the timer to work properly!",
+                modifier = Modifier.padding(16.dp),
+                color = Color.Red.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center
+            )
+        }
+
         Row() {
             NumberPicker(
                 value = hours,
@@ -127,6 +160,26 @@ fun MainScreenContent(
                     onClick = { updatePhase(TimerPhase.RUNNING) }
                 ) {
                     Text(text = "Start Timer")
+                }
+            }
+        }
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            var granted = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (!granted) {
+                OutlinedButton(
+                    onClick = {
+                        notificationPermissionLauncher.launch(
+                            Manifest.permission.POST_NOTIFICATIONS
+                        )
+                    }
+                ) {
+                    Text("Разрешить уведомления")
                 }
             }
         }

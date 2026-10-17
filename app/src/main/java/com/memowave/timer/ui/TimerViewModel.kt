@@ -1,8 +1,10 @@
 package com.memowave.timer.ui
 
+import android.content.Context
 import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.memowave.timer.TimerAlarmScheduler
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +31,9 @@ enum class TimeUnitInMillis(val millis: Long) {
     SECOND(1000L);
 }
 
-class TimerViewModel : ViewModel() {
+class TimerViewModel (context: Context) : ViewModel() {
+    private val alarmScheduler = TimerAlarmScheduler(context)
+
     private val _uiState = MutableStateFlow(TimerUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -58,6 +62,11 @@ class TimerViewModel : ViewModel() {
         tickJob?.cancel()
         endTimeMillis = SystemClock.elapsedRealtime() + duration
 
+        val scheduled = alarmScheduler.schedule(endTimeMillis)
+        if (!scheduled) {
+            return
+        }
+
         _uiState.update {
             it.copy(phase = TimerPhase.RUNNING)
         }
@@ -77,8 +86,6 @@ class TimerViewModel : ViewModel() {
                 }
 
                 if (remainingMillis <= 0) {
-                    stopTimer()
-                    finishNotify()
                     break
                 }
                 delay(TimeUnitInMillis.SECOND.millis)
@@ -98,6 +105,7 @@ class TimerViewModel : ViewModel() {
             it.copy(
                 remainingMillis = remainingMillis,
                 phase = if (remainingMillis > 0) {
+                    alarmScheduler.cancel()
                     TimerPhase.PAUSED
                 } else {
                     TimerPhase.STOPPED
@@ -107,7 +115,6 @@ class TimerViewModel : ViewModel() {
 
         if (remainingMillis <= 0) {
             stopTimer()
-            finishNotify()
         }
     }
 
@@ -115,16 +122,14 @@ class TimerViewModel : ViewModel() {
         tickJob?.cancel()
         tickJob = null
 
+        alarmScheduler.cancel()
+
         _uiState.update {
             it.copy(
                 remainingMillis = 0L,
                 phase = TimerPhase.STOPPED
             )
         }
-    }
-
-    fun finishNotify() {
-
     }
 
     fun updateTime(newValue: TimeUnitOperation, changedTime: ChangedTimeUnit) {
