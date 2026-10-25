@@ -42,8 +42,8 @@ class TimerAlarmReceiver : BroadcastReceiver() {
 
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setContentTitle("Timer is finished")
-            .setContentText("Your timer has finished.")
+            .setContentTitle(context.getString(R.string.timer_finished_notif_title))
+            .setContentText(context.getString(R.string.timer_finished_notif_text))
             .setContentIntent(app)
             .setAutoCancel(true)
             .build()

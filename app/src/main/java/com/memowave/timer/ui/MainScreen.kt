@@ -21,12 +21,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.memowave.timer.ui.observe_timer.NumberPicker
+import com.memowave.timer.R
 
 @Composable
 fun MainScreenRoute(navController: NavController, timerVM: TimerViewModel) {
@@ -89,7 +90,7 @@ fun MainScreenContent(
 
         if (!notificationGranted.value) {
             Text(
-                text = "Notification permission is required for the timer to work properly!",
+                text = stringResource(R.string.notif_permission),
                 modifier = Modifier.padding(16.dp),
                 color = Color.Red.copy(alpha = 0.8f),
                 textAlign = TextAlign.Center
@@ -138,7 +139,7 @@ fun MainScreenContent(
                     modifier = Modifier.padding(top = 16.dp),
                     onClick = { updatePhase(TimerPhase.PAUSED) }
                 ) {
-                    Text(text = "Pause Timer")
+                    Text(text = stringResource(R.string.pause_timer))
                 }
             }
 
@@ -148,13 +149,13 @@ fun MainScreenContent(
                         modifier = Modifier.padding(top = 16.dp),
                         onClick = { updatePhase(TimerPhase.RUNNING) }
                     ) {
-                        Text(text = "Resume Timer")
+                        Text(text = stringResource(R.string.resume_timer))
                     }
                     Button(
                         modifier = Modifier.padding(top = 16.dp, start = 8.dp),
                         onClick = { updatePhase(TimerPhase.STOPPED) }
                     ) {
-                        Text(text = "Stop Timer")
+                        Text(text = stringResource(R.string.stop_timer))
                     }
                 }
             }
@@ -164,7 +165,7 @@ fun MainScreenContent(
                     modifier = Modifier.padding(top = 16.dp),
                     onClick = { updatePhase(TimerPhase.RUNNING) }
                 ) {
-                    Text(text = "Start Timer")
+                    Text(text = stringResource(R.string.start_timer))
                 }
             }
         }
@@ -179,7 +180,7 @@ fun MainScreenContent(
                     )
                 }
             ) {
-                Text("Разрешить уведомления")
+                Text(stringResource(R.string.allow_notif))
             }
         }
     }
