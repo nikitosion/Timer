@@ -1,4 +1,4 @@
-package com.memowave.timer.ui.observe_timer
+package com.memowave.timer.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
