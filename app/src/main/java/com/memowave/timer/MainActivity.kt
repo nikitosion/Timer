@@ -42,17 +42,26 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun TimerApp(context: Context) {
     val navController = rememberNavController()
-    val timerVM = viewModel { TimerViewModel(context) }
+    val timerVM = viewModel {
+        TimerViewModel(
+            alarmScheduler = TimerAlarmScheduler(context),
+            timerStateStore = PreferencesTimerStateStore(
+                context.getSharedPreferences("timer_state", Context.MODE_PRIVATE)
+            )
+        )
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
         Surface(
-            modifier = Modifier.fillMaxSize()
-            .padding(
-                top = paddingValues.calculateTopPadding(),
-                bottom = paddingValues.calculateBottomPadding()
-            )) {
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    top = paddingValues.calculateTopPadding(),
+                    bottom = paddingValues.calculateBottomPadding()
+                )
+        ) {
             NavGraph(navController, timerVM)
         }
     }

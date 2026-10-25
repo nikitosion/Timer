@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 
-class TimerAlarmScheduler(context: Context) {
+class TimerAlarmScheduler(context: Context) : AlarmScheduler {
     private val appContext = context.applicationContext
 
     private val alarmManager = appContext.getSystemService(AlarmManager::class.java)
@@ -20,7 +20,7 @@ class TimerAlarmScheduler(context: Context) {
         )
     }
 
-    fun schedule(endTimeMillis: Long): Boolean {
+    override fun schedule(endTimeMillis: Long): Boolean {
         return try {
             alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.ELAPSED_REALTIME_WAKEUP,
@@ -33,7 +33,7 @@ class TimerAlarmScheduler(context: Context) {
         }
     }
 
-    fun cancel() {
+    override fun cancel() {
         alarmManager.cancel(pendingIntent())
     }
 

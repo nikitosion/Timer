@@ -1,10 +1,10 @@
 package com.memowave.timer.ui
 
-import android.content.Context
 import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.memowave.timer.TimerAlarmScheduler
+import com.memowave.timer.TimerStateStore
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,16 +31,16 @@ enum class TimeUnitInMillis(val millis: Long) {
     SECOND(1000L);
 }
 
-class TimerViewModel(context: Context) : ViewModel() {
-    private val alarmScheduler = TimerAlarmScheduler(context)
+class TimerViewModel(
+    private val alarmScheduler: TimerAlarmScheduler,
+    private val timerStateStore: TimerStateStore
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TimerUiState())
     val uiState = _uiState.asStateFlow()
 
     private var tickJob: Job? = null
     private var endTimeMillis: Long = 0L
-
-    private val preferences = context.getSharedPreferences("timer_state", Context.MODE_PRIVATE)
 
     init {
         restoreTimer()
@@ -72,9 +72,7 @@ class TimerViewModel(context: Context) : ViewModel() {
             return
         }
 
-        preferences.edit()
-            .putLong("end_time", endTimeMillis)
-            .apply()
+        timerStateStore.saveEndTime(endTimeMillis)
 
         _uiState.update {
             it.copy(phase = TimerPhase.RUNNING)
@@ -138,9 +136,7 @@ class TimerViewModel(context: Context) : ViewModel() {
     }
 
     fun restoreTimer() {
-        if (!preferences.contains("end_time")) return
-
-        val savedEndTimeMillis = preferences.getLong("end_time", 0L)
+        val savedEndTimeMillis = timerStateStore.loadEndTime() ?: return
 
         val remainingMillis = (savedEndTimeMillis - SystemClock.elapsedRealtime()).coerceAtLeast(0L)
 
@@ -168,9 +164,7 @@ class TimerViewModel(context: Context) : ViewModel() {
     }
 
     private fun clearSavedTimer() {
-        preferences.edit()
-            .remove("end_time")
-            .apply()
+        timerStateStore.clear()
     }
 
     fun stopTimer() {
